@@ -22,4 +22,5 @@ add_definitions(${LLVM_DEFINITIONS})
 include_directories(${LLVM_INCLUDE_DIRS})
 
 
-add_subdirectory(SkeletonPass)
+add_subdirectory(InstrumentationPasses)
+add_subdirectory(StaticAnalysisPasses)
