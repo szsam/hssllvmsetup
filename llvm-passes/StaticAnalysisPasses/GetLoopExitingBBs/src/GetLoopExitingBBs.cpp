@@ -24,7 +24,7 @@
 
 using namespace llvm;
 
-namespace UMD {
+namespace HSS {
 
 
   /***

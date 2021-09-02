@@ -26,7 +26,7 @@ using namespace llvm;
 
 #define LOG_FUNC_NAME "log_mem_access"
 
-namespace UMD {
+namespace HSS {
 
 
   /***
