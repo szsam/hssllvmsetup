@@ -1,6 +1,29 @@
 # LLVM Passes
 This folder contains various llvm passes.
-## Building
+
+## Generating Bitcode file
+```
+clang -c -emit-llvm <your_c_file> -o <path_to_output_bitcode>
+```
+
+Example:
+```
+clang -c -emit-llvm simple_log.c -o simple_log.bc
+```
+The file `simple_log.bc` will be in binary format.
+
+You can get human readable bitcode file from the binary format using the following command:
+
+```
+llvm-dis <path_to_bitcode_file>
+```
+Example:
+```
+llvm-dis simple_log.bc
+```
+The above command will generate `simple_log.ll` which is a text file containing human readable LLVM IR.
+
+## Building passes
 Building all the passes.
 
     mkdir obj
