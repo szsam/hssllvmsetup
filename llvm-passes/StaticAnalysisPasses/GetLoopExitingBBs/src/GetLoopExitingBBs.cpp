@@ -59,10 +59,13 @@ namespace HSS {
             // get the loop exit condition.
             for (auto *bb: exitBBs) {
               Instruction *exitInstr = bb->getTerminator();
+              dbgs() << *exitInstr;
               const DebugLoc &DL = exitInstr->getDebugLoc();
-              DILocation *di = DL.get();
-
-              dbgs() << *exitInstr << " at " << DL.getLine() << " " << di->getFilename() << "\n";
+              if (DL) {
+                  DILocation *di = DL.get();
+                  dbgs() << " at " << DL.getLine() << " " << di->getFilename();
+              }
+              dbgs() << "\n";
             }
 
           }
