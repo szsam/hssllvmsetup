@@ -23,3 +23,4 @@ include_directories(${LLVM_INCLUDE_DIRS})
 
 
 add_subdirectory(FunctionPrioritization)
+add_subdirectory(LimitLoopIterations)
