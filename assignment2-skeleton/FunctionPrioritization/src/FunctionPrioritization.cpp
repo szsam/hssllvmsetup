@@ -112,6 +112,7 @@ namespace HSS {
     void computeInterestingBBs(Function *TF, std::set<Function *> &Visited) {
       if (Visited.find(TF) == Visited.end()) {
         Visited.insert(TF);
+        dbgs() << "[+] Computing interesting basic blocks for the function:" << TF.getName().str() << "\n";
         // Iterate through all the call instructions
         // that are calling the target function
         // and consider the corresponding basic blocks as interesting.
@@ -119,6 +120,7 @@ namespace HSS {
           auto *BB = I->getParent();
           auto *TFB = BB->getParent();
           InterestingBBs[TFB].insert(BB);
+          computeInterestingBBs(TFB, Visited);
         }
       }
     }
@@ -179,14 +181,10 @@ namespace HSS {
         }
       }
 
-      // Compute all interesting basic blocks in each function.
+      // Compute all interesting basic blocks in each function
+      // starting from TargetFunc.
       std::set<Function *> VisitedFuncs;
-      for (auto &F: M) {
-        if (!F.isDeclaration()) {
-          dbgs() << "[+] Computing interesting basic blocks for the function:" << F.getName().str() << "\n";
-          computeInterestingBBs(&F, VisitedFuncs);
-        }
-      }
+      computeInterestingBBs(MF, VisitedFuncs);
 
       // Now instrument each function.
       for (auto &F: M) {
