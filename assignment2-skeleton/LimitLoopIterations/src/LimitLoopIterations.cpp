@@ -114,36 +114,38 @@ namespace HSS {
             // loopcounter++; jump to NewHdr <- Enter the loop.
 
             // Split the old loop header.
-            BasicBlock *LHdr = LObj->getHeader();
-            auto *OldTI = LHdr->getTerminator();
-            BasicBlock *NewHdr = LHdr->splitBasicBlock(OldTI, "LoopIncr");
+            if (LoopCounter != nullptr) {
+                BasicBlock *LHdr = LObj->getHeader();
+                auto *OldTI = LHdr->getTerminator();
+                BasicBlock *NewHdr = LHdr->splitBasicBlock(OldTI, "LoopIncr");
 
-            // CBB
-            BasicBlock *CheckBB = BasicBlock::Create(M.getContext(), "CheckBB", &CurrF);
-            // Old hdr -> CBB
-            LHdr->getTerminator()->replaceSuccessorWith(NewHdr, CheckBB);
+                // CBB
+                BasicBlock *CheckBB = BasicBlock::Create(M.getContext(), "CheckBB", &CurrF);
+                // Old hdr -> CBB
+                LHdr->getTerminator()->replaceSuccessorWith(NewHdr, CheckBB);
 
-            // SBB: This Basic block increments the loop counter.
-            BasicBlock *StoreBB = BasicBlock::Create(M.getContext(), "StoreBB", &CurrF);
-            IRBuilder<> SIR(StoreBB);
-            // loopcounter++;
-            incrementAndStore(SIR, LoopCounter);
-            // SBB->NewHdr
-            SIR.CreateBr(NewHdr);
-            // The following will make sure that all phi instructions
-            // that use LHdr will be replaced with StoreBB.
-            NewHdr->replacePhiUsesWith(LHdr, StoreBB);
+                // SBB: This Basic block increments the loop counter.
+                BasicBlock *StoreBB = BasicBlock::Create(M.getContext(), "StoreBB", &CurrF);
+                IRBuilder<> SIR(StoreBB);
+                // loopcounter++;
+                incrementAndStore(SIR, LoopCounter);
+                // SBB->NewHdr
+                SIR.CreateBr(NewHdr);
+                // The following will make sure that all phi instructions
+                // that use LHdr will be replaced with StoreBB.
+                NewHdr->replacePhiUsesWith(LHdr, StoreBB);
 
-            IRBuilder<> CIR(CheckBB);
-            // if (loopcounter < max) jump to StoreBB else TargetExitBB (Exit the loop).
-            checkAndBranch(CIR, LoopCounter, StoreBB, TargetExitBB);
-            // handle PHi instruction.
-            // We are adding CheckBB as the new predecessor.
-            // So, make sure that all phi nodes in TargetExitBB are updated to use
-            // first value as the incoming value from CheckBB.
-            // TODO: fill this
+                IRBuilder<> CIR(CheckBB);
+                // if (loopcounter < max) jump to StoreBB else TargetExitBB (Exit the loop).
+                checkAndBranch(CIR, LoopCounter, StoreBB, TargetExitBB);
+                // handle PHi instruction.
+                // We are adding CheckBB as the new predecessor.
+                // So, make sure that all phi nodes in TargetExitBB are updated to use
+                // first value as the incoming value from CheckBB.
+                // TODO: fill this
 
-            Edited = true;
+                Edited = true;
+            }
           }
         }
       }
